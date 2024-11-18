@@ -313,14 +313,15 @@ def tensor_reduce(
 
         #modified based off mod 2 answers
         for i in prange(len(out)):
-            out_index = np.empty(MAX_DIMS, dtype=np.int32) #private var
+            out_index: Index = np.zeros(MAX_DIMS, dtype=np.int32)
+            reduce_size = a_shape[reduce_dim]
             to_index(i, out_shape, out_index)
             out_pos = index_to_position(out_index, out_strides)
             #reduction
-            for j in range(a_shape[reduce_dim]):
-                a_index = out_index.copy()
-                a_index[reduce_dim] = j
-                out[out_pos] = fn(a_storage[index_to_position(a_index, a_strides)], out[out_pos])
+            for j in range(reduce_size):
+                out_index[reduce_dim] = j
+                j = index_to_position(out_index, a_strides)
+                out[out_pos] = fn(out[out_pos], a_storage[j])
 
         # raise NotImplementedError("Need to implement for Task 3.1")
 
