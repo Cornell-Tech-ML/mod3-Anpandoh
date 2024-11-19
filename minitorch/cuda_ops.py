@@ -378,8 +378,8 @@ def _mm_practice(out: Storage, a: Storage, b: Storage, size: int) -> None:
         for j in range(BLOCK_DIM):
             out[ty * size + tx] += a_shared[ty, j] * b_shared[j, tx]
         cuda.syncthreads()
-    # TODO: Implement for Task 3.3.
-    raise NotImplementedError("Need to implement for Task 3.3")
+    # # TODO: Implement for Task 3.3.
+    # raise NotImplementedError("Need to implement for Task 3.3")
 
 
 jit_mm_practice = jit(_mm_practice)
