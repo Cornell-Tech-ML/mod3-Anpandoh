@@ -224,13 +224,13 @@ def tensor_zip(
 
         if i < out_size:
             to_index(i, out_shape, out_index)
-            to_index(i, a_shape, a_index)
-            to_index(i, b_shape, b_index)
+            broadcast_index(out_index, out_shape, a_shape, a_index)
+            broadcast_index(out_index, out_shape, b_shape, b_index)
+
             out_pos = index_to_position(out_index, out_strides)
             a_pos = index_to_position(a_index, a_strides)
             b_pos = index_to_position(b_index, b_strides)
             out[out_pos] = fn(a_storage[a_pos], b_storage[b_pos])
-
     return cuda.jit()(_zip)  # type: ignore
     
 
@@ -326,8 +326,34 @@ def tensor_reduce(
         out_pos = cuda.blockIdx.x
         pos = cuda.threadIdx.x
 
-        # TODO: Implement for Task 3.3.
-        raise NotImplementedError("Need to implement for Task 3.3")
+        # Initialize cache
+        cache[pos] = reduce_value
+
+        # Calculate the global index
+        i = out_pos * BLOCK_DIM + pos
+
+        if i < out_size:
+            to_index(i, out_shape, out_index)
+            out_index[reduce_dim] = 0
+            out_pos = index_to_position(out_index, out_strides)
+
+            for j in range(a_shape[reduce_dim]):
+                out_index[reduce_dim] = j
+                a_pos = index_to_position(out_index, a_strides)
+                cache[pos] = fn(cache[pos], a_storage[a_pos])
+
+        cuda.syncthreads()
+
+        # Perform reduction in shared memory
+        offset = 1
+        while offset < BLOCK_DIM:
+            if pos % (2 * offset) == 0 and pos + offset < BLOCK_DIM:
+                cache[pos] = fn(cache[pos], cache[pos + offset])
+            offset *= 2
+            cuda.syncthreads()
+
+        if pos == 0:
+            out[out_pos] = cache[0]
 
     return jit(_reduce)  # type: ignore
 
