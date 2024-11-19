@@ -182,7 +182,7 @@ def tensor_map(
             out_pos = index_to_position(out_index, out_strides)
             in_pos = index_to_position(in_index, in_strides)
             out[out_pos] = fn(in_storage[in_pos])
-            
+
     return cuda.jit()(_map)  # type: ignore
 
 
@@ -265,7 +265,7 @@ def _sum_practice(out: Storage, a: Storage, size: int) -> None:
 
     
     if i < size:
-        cache[pos] = a[i]
+        cache[pos] = float(a[i])
         cuda.syncthreads()
     else:
         cache[i] = 0.0
