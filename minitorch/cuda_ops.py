@@ -347,7 +347,8 @@ def tensor_reduce(
                     stride //= 2
 
             if pos == 0:
-                out[index_to_position(out_index, out_strides)] = cache[0]
+                out_pos = index_to_position(out_index, out_strides)
+                out[out_pos] = cache[0]
 
     return jit(_reduce)  # type: ignore
 
