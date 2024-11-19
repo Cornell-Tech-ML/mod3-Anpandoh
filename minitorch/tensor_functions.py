@@ -199,14 +199,17 @@ class Sum(Function):
     @staticmethod
     def forward(ctx: Context, a: Tensor, dim: Optional[Tensor] = None) -> Tensor:
         """Sum the tensor."""
-        if dim is not None:
-            return a.f.add_reduce(a, int(dim.item()))
-        else:
-            return a.f.add_reduce(a.contiguous().view(int(operators.prod(a.shape))), 0)
+        ctx.save_for_backward(a, dim)
+        return a.f.add_reduce(a, int(dim.item()))
+        # if dim is not None:
+        #     return a.f.add_reduce(a, int(dim.item()))
+        # else:
+        #     return a.f.add_reduce(a.contiguous().view(int(operators.prod(a.shape))), 0)
 
     @staticmethod
     def backward(ctx: Context, grad_output: Tensor) -> Tuple[Tensor, float]:
         """Return the gradients."""
+        a_shape, dim = ctx.saved_values
         return grad_output, 0.0
 
 
