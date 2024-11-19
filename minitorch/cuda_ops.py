@@ -264,16 +264,15 @@ def _sum_practice(out: Storage, a: Storage, size: int) -> None:
 
     
     if i < size:
-        cache[pos] = a[i]
+        cache[pos] = float(a[i])
         cuda.syncthreads()
-
     else:
-        cache[pos] = 0.0
+        cache[i] = 0.0
 
-
-    for j in [1, 2, 4, 8, 16]:
-        if pos % (2 * j) == 0:
+    for j in [1,2,4,8,16]:
+        if pos % (j * 2) == 0:
             cache[pos] = cache[pos + j]
+
         if pos == 0:
             out[cuda.blockIdx.x] = cache[0]
     # raise NotImplementedError("Need to implement for Task 3.3")
