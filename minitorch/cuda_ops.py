@@ -395,7 +395,7 @@ def _mm_practice(out: Storage, a: Storage, b: Storage, size: int) -> None:
         return
     
     a_shared[ty, tx] = a[tx * size + ty]
-    b_shared[ty, tx] = b[ty * size + tx]
+    b_shared[ty, tx] = b[tx * size + ty]
     cuda.syncthreads()
 
     res = 0.0
