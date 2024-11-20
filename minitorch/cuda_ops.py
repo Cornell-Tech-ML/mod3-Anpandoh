@@ -389,13 +389,13 @@ def _mm_practice(out: Storage, a: Storage, b: Storage, size: int) -> None:
     b_shared = cuda.shared.array((BLOCK_DIM, BLOCK_DIM), numba.float64)
 
     tx = cuda.threadIdx.x
-    ty = cuda.threadIdx.x
+    ty = cuda.threadIdx.y
 
     if tx >= size or ty >= size:
         return
     
-    a_shared[ty, tx] = a[tx * size + ty]
-    b_shared[ty, tx] = b[tx * size + ty]
+    a_shared[tx, ty] = a[tx * size + ty]
+    b_shared[tx, ty] = b[tx * size + ty]
     cuda.syncthreads()
 
     res = 0.0
