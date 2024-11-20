@@ -465,10 +465,10 @@ def _tensor_matrix_multiply(
     pi = cuda.threadIdx.x
     pj = cuda.threadIdx.y
 
-    res = 0.0
 
     # Code Plan:
     if i < out_shape[1] and j < out_shape[2]:
+        res = 0.0
 
         # 1) Move across shared dimension by block dim.
         for k in range(0, a_shape[2], BLOCK_DIM):
@@ -476,7 +476,7 @@ def _tensor_matrix_multiply(
             #    a) Copy into shared memory for a matrix.
 
             if i < a_shape[1] and k + pj < a_shape[2]:
-                a_pos = a_batch_stride * batch + a_strides[1] * i + a_strides[[2] * (k + pj)]
+                a_pos = a_batch_stride * batch + a_strides[1] * i + a_strides[2] * (k + pj)
                 a_shared[pi, pj] = a_storage[a_pos]
 
             #    b) Copy into shared memory for b matrix
@@ -488,13 +488,12 @@ def _tensor_matrix_multiply(
 
     #    c) Compute the dot produce for position c[i, j]
             for kk in range(BLOCK_DIM):
-                if k + kk < a_shape[2]:
+                if (k + kk) < a_shape[2]:
                     res += a_shared[pi, kk] * b_shared[kk, pj]
+            cuda.syncthreads()
 
         out[out_strides[0] * batch + out_strides[1] * i + out_strides[2] * j] = res
 
-    # # TODO: Implement for Task 3.4.
-    # raise NotImplementedError("Need to implement for Task 3.4")
 
 
 tensor_matrix_multiply = jit(_tensor_matrix_multiply)
