@@ -389,7 +389,7 @@ def _mm_practice(out: Storage, a: Storage, b: Storage, size: int) -> None:
     b_shared = cuda.shared.array((BLOCK_DIM, BLOCK_DIM), numba.float64)
 
     tx = cuda.threadIdx.x
-    ty = cuda.threadIdx.y
+    ty = cuda.threadIdx.x
 
     if tx >= size or ty >= size:
         return
