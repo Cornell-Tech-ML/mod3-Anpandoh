@@ -466,39 +466,32 @@ def _tensor_matrix_multiply(
     pj = cuda.threadIdx.y
 
     # Code Plan:
-    # 1) Move across shared dimension by block dim.
     if i < out_shape[0] and j < out_shape[1]:
-        out_pos = index_to_position(batch, out_strides)
-        out[out_pos] = 0.0
+        res = 0.0
 
-        for k in range((a_shape[1] + BLOCK_DIM - 1) // BLOCK_DIM):
-            # Load a and b into shared memory
-            a_shared[pi, pj] = 0.0
-            b_shared[pi, pj] = 0.0
-
-            a_pos = index_to_position(batch, a_batch_stride)
-            b_pos = index_to_position(batch, b_batch_stride)
+        # 1) Move across shared dimension by block dim.
+        for k in range(0, a_shape[2], BLOCK_DIM):
 
             #    a) Copy into shared memory for a matrix.
 
-            if i < a_shape[0] and k * BLOCK_DIM + pi < a_shape[1]:
+            if i < a_shape[1] and k + pj < a_shape[2]:
+                a_pos = a_batch_stride * batch + a_strides[1] * i + a_strides[2] * (k + pj)
                 a_shared[pi, pj] = a_storage[a_pos]
 
             #    b) Copy into shared memory for b matrix
-            if j < b_shape[1] and k * BLOCK_DIM + pj < b_shape[0]:
+            if j < b_shape[2] and k + pi < b_shape[1]:
+                b_pos = b_batch_stride * batch + b_strides[1] * (k + pi) + b_strides[2] * j
                 b_shared[pi, pj] = b_storage[b_pos]
 
             cuda.syncthreads()
 
     #    c) Compute the dot produce for position c[i, j]
             for kk in range(BLOCK_DIM):
-                out[out_pos] += a_shared[pi, kk] * b_shared[kk, pj]
-            cuda.syncthreads()
+                if k + kk < a_shape[2]:
+                    res += a_shared[pi, kk] * b_shared[kk, pj]
 
+        out[out_strides[0] * batch + out_strides[1] * i + out_strides[2] * j] = res
 
-
-    #    a) Copy into shared memory for a matrix.
-    #    c) Compute the dot produce for position c[i, j]
     # # TODO: Implement for Task 3.4.
     # raise NotImplementedError("Need to implement for Task 3.4")
 
