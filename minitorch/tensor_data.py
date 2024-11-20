@@ -31,7 +31,8 @@ UserIndex: TypeAlias = Sequence[int]
 UserShape: TypeAlias = Sequence[int]
 UserStrides: TypeAlias = Sequence[int]
 
-#Fixed some issues based off Mod 2 Answers
+# Fixed some issues based off Mod 2 Answers
+
 
 def index_to_position(index: Index, strides: Strides) -> int:
     """Converts a multidimensional tensor `index` into a single-dimensional position in
@@ -190,9 +191,10 @@ class TensorData:
     def is_contiguous(self) -> bool:
         """Check that the layout is contiguous, i.e. outer dimensions have bigger strides than inner dimensions.
 
-        Returns:
+        Returns
+        -------
             bool : True if contiguous
-            
+
         """
         last = 1e9
         for stride in self._strides:
