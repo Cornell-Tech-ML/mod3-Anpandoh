@@ -489,7 +489,7 @@ def _tensor_matrix_multiply(
     #    c) Compute the dot produce for position c[i, j]
             for kk in range(BLOCK_DIM):
                 if k + kk < a_shape[2]:
-                    res += a_storage[pi, kk] * b_storage[kk, pj]
+                    res += a_shared[pi, kk] * b_shared[kk, pj]
 
         out[out_strides[0] * batch + out_strides[1] * i + out_strides[2] * j] = res
 
