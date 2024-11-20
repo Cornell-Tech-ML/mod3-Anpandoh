@@ -399,8 +399,8 @@ def _mm_practice(out: Storage, a: Storage, b: Storage, size: int) -> None:
         for j in range(BLOCK_DIM):
             out[ty * size + tx] += a_shared[ty, j] * b_shared[j, tx]
         cuda.syncthreads()
-    # # TODO: Implement for Task 3.3.
-    # raise NotImplementedError("Need to implement for Task 3.3")
+    # # TODO: Implement for Task 3.4.
+    # raise NotImplementedError("Need to implement for Task 3.4")
 
 
 jit_mm_practice = jit(_mm_practice)
@@ -465,11 +465,40 @@ def _tensor_matrix_multiply(
 
     # Code Plan:
     # 1) Move across shared dimension by block dim.
-    #    a) Copy into shared memory for a matrix.
-    #    b) Copy into shared memory for b matrix
+    if i < out_shape[0] and j < out_shape[1]:
+        out_pos = index_to_position(batch, out_strides)
+        out[out_pos] = 0.0
+
+        for k in range((a_shape[1] + BLOCK_DIM - 1) // BLOCK_DIM):
+            # Load a and b into shared memory
+            a_shared[pi, pj] = 0.0
+            b_shared[pi, pj] = 0.0
+
+            a_pos = index_to_position(batch, a_batch_stride)
+            b_pos = index_to_position(batch, b_batch_stride)
+
+            #    a) Copy into shared memory for a matrix.
+
+            if i < a_shape[0] and k * BLOCK_DIM + pi < a_shape[1]:
+                a_shared[pi, pj] = a_storage[a_pos]
+
+            #    b) Copy into shared memory for b matrix
+            if j < b_shape[1] and k * BLOCK_DIM + pj < b_shape[0]:
+                b_shared[pi, pj] = b_storage[b_pos]
+
+            cuda.syncthreads()
+
     #    c) Compute the dot produce for position c[i, j]
-    # TODO: Implement for Task 3.4.
-    raise NotImplementedError("Need to implement for Task 3.4")
+            for kk in range(BLOCK_DIM):
+                out[out_pos] += a_shared[pi, kk] * b_shared[kk, pj]
+            cuda.syncthreads()
+
+
+
+    #    a) Copy into shared memory for a matrix.
+    #    c) Compute the dot produce for position c[i, j]
+    # # TODO: Implement for Task 3.4.
+    # raise NotImplementedError("Need to implement for Task 3.4")
 
 
 tensor_matrix_multiply = jit(_tensor_matrix_multiply)
