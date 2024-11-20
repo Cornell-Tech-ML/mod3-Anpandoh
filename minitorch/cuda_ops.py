@@ -466,7 +466,7 @@ def _tensor_matrix_multiply(
     pj = cuda.threadIdx.y
 
     # Code Plan:
-    if i < out_shape[0] and j < out_shape[1]:
+    if i < out_shape[1] and j < out_shape[2]:
         res = 0.0
 
         # 1) Move across shared dimension by block dim.
