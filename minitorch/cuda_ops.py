@@ -475,7 +475,6 @@ def _tensor_matrix_multiply(
     acc = 0.0
 
     for k_start in range(0, a_shape[2], BLOCK_DIM):
-        # 代码拷贝
         k = k_start + pj
         if i < a_shape[1] and k < a_shape[2]:
             a_shared[pi, pj] = a_storage[a_batch_stride * batch + a_strides[1] * i + a_strides[[2] * k]]
