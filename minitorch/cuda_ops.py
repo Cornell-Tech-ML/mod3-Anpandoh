@@ -475,7 +475,7 @@ def _tensor_matrix_multiply(
             #    a) Copy into shared memory for a matrix.
 
             if i < a_shape[1] and k + pj < a_shape[2]:
-                a_pos = a_batch_stride * batch + a_strides[1] * i + a_strides[2] * (k + pj)
+                a_pos = a_batch_stride * batch + a_strides[1] * i + a_strides[2 * (k + pj)]
                 a_shared[pi, pj] = a_storage[a_pos]
 
             #    b) Copy into shared memory for b matrix
