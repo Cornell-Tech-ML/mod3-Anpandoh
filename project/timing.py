@@ -5,8 +5,10 @@ import time
 import sys
 import numpy as np
 
+SimpleTensorBackend = minitorch.TensorBackend(minitorch.SimpleOps)
 FastTensorBackend = minitorch.TensorBackend(minitorch.FastOps)
 GPUBackend = minitorch.TensorBackend(minitorch.CudaOps)
+
 
 
 def run_matmul(backend, size=16) -> None:
@@ -19,6 +21,7 @@ def run_matmul(backend, size=16) -> None:
 
 if __name__ == "__main__":
     # Warmup
+    run_matmul(SimpleTensorBackend)
     run_matmul(FastTensorBackend)
     run_matmul(GPUBackend)
 
@@ -31,6 +34,10 @@ if __name__ == "__main__":
         fast_times = []
         gpu_times = []
         for _ in range(ntrials):
+            start_simple = time.time()
+            run_matmul(SimpleTensorBackend, size)
+            end_simple = time.time()
+
             start_fast = time.time()
             run_matmul(FastTensorBackend, size)
             end_fast = time.time()
@@ -39,12 +46,15 @@ if __name__ == "__main__":
             run_matmul(GPUBackend, size)
             end_gpu = time.time()
 
+            simple_time = end_simple - start_simple
             fast_time = end_fast - start_fast
             gpu_time = end_gpu - start_gpu
 
+            simple_times.append(simple_time)
             fast_times.append(fast_time)
             gpu_times.append(gpu_time)
 
+        times[size]["simple"] = np.mean(simple_times)
         times[size]["fast"] = np.mean(fast_times)
         times[size]["gpu"] = np.mean(gpu_times)
         print(times[size])
