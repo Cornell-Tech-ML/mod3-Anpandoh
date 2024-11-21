@@ -169,7 +169,6 @@ def tensor_map(
         in_shape: Shape,
         in_strides: Strides,
     ) -> None:
-        # TODO: Implement for Task 3.1.
         # parallelize the loop
         # out_index = np.zeros(len(out_shape), dtype=int)
         # in_index = np.zeros(len(in_shape), dtype=int)
@@ -191,8 +190,6 @@ def tensor_map(
             out_pos = index_to_position(out_index, out_strides)
             in_pos = index_to_position(in_index, in_strides)
             out[out_pos] = fn(in_storage[in_pos])
-
-        # raise NotImplementedError("Need to implement for Task 3.1")
 
     return njit(_map, parallel=True)  # type: ignore
 
@@ -231,7 +228,6 @@ def tensor_zip(
         b_shape: Shape,
         b_strides: Strides,
     ) -> None:
-        # TODO: Implement for Task 3.1.
         # parallelize the loop
         # out_index = np.zeros(len(out_shape), dtype=int)
         # a_index = np.zeros(len(a_shape), dtype=int)
@@ -258,8 +254,6 @@ def tensor_zip(
             a_pos = index_to_position(a_index, a_strides)
             b_pos = index_to_position(b_index, b_strides)
             out[out_pos] = fn(a_storage[a_pos], b_storage[b_pos])
-
-        # raise NotImplementedError("Need to implement for Task 3.1")
 
     return njit(_zip, parallel=True)  # type: ignore
 
@@ -294,7 +288,6 @@ def tensor_reduce(
         a_strides: Strides,
         reduce_dim: int,
     ) -> None:
-        # TODO: Implement for Task 3.1.
         # parallelize the loop
         # out_index = np.zeros(len(out_shape), dtype=int)
         # for i in range(len(out)):
@@ -319,8 +312,6 @@ def tensor_reduce(
                 out_index[reduce_dim] = j
                 j = index_to_position(out_index, a_strides)
                 out[out_pos] = fn(out[out_pos], a_storage[j])
-
-        # raise NotImplementedError("Need to implement for Task 3.1")
 
     return njit(_reduce, parallel=True)  # type: ignore
 
@@ -388,7 +379,6 @@ def _tensor_matrix_multiply(
                     i * out_strides[0] + j * out_strides[1] + k * out_strides[2]
                 )
                 out[output_index] = res
-        # raise NotImplementedError("Need to implement for Task 3.2")
 
 
 tensor_matrix_multiply = njit(_tensor_matrix_multiply, parallel=True)

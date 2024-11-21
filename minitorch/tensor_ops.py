@@ -47,7 +47,20 @@ class TensorOps:
     @staticmethod
     def matrix_multiply(a: Tensor, b: Tensor) -> Tensor:
         """Matrix multiply"""
-        raise NotImplementedError("Not implemented in this assignment")
+        # assert (
+        #     a.shape[1] == b.shape[0]
+        # ), "Incompatible dimensions for matrix multiplication"
+        out_shape = (a.shape[0], b.shape[1])
+        out = a.zeros(out_shape)
+
+        for i in range(out_shape[0]):
+            for j in range(out_shape[1]):
+                sum = 0.0
+                for k in range(a.shape[1]):
+                    sum += a[i, k] * b[k, j]
+                out[i, j] = sum
+
+        return out
 
     cuda = False
 

@@ -306,8 +306,6 @@ def _sum_practice(out: Storage, a: Storage, size: int) -> None:
         if pos == 0:
             out[cuda.blockIdx.x] = cache[0]
 
-    # raise NotImplementedError("Need to implement for Task 3.3")
-
 
 jit_sum_practice = cuda.jit()(_sum_practice)
 
@@ -430,8 +428,6 @@ def _mm_practice(out: Storage, a: Storage, b: Storage, size: int) -> None:
             res += a_shared[tx, k] * b_shared[k, ty]
 
         out[tx * size + ty] = res
-        # # TODO: Implement for Task 3.4.
-        # raise NotImplementedError("Need to implement for Task 3.4")
 
 
 jit_mm_practice = jit(_mm_practice)
