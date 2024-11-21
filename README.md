@@ -356,6 +356,10 @@ No allocation hoisting found
 None
 
 
+
+
+
+
 # Mod 3.4 Graph
 
 Timing summary
@@ -374,6 +378,10 @@ Size: 512
 Size: 1024
     fast: 7.98512
     gpu: 1.18902
+
+![alt text](image.png)
+
+
 
 
 # Mod 3.5 Training
